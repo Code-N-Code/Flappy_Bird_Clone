@@ -156,8 +156,6 @@ public class FlappyBird extends ApplicationAdapter {
 		font.draw(batch , "Score :" + score , 70 , screenHeight-50);
 		batch.draw(bird[birdState] , birdX, birdY);
         batch.end();
-
-
 	}
 
 	@Override
