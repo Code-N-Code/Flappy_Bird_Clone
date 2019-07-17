@@ -2,6 +2,7 @@ package com.codencode.flappybird;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -15,29 +16,32 @@ import com.badlogic.gdx.math.Rectangle;
 import java.util.Random;
 
 public class FlappyBird extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture background;
-	Texture bird[];
-	Texture tubes[];
-	Texture gameOver;
-	float birdX , birdY;
-	float screenWidth , screenHeight;
-	float velocity = 0;
+	private SpriteBatch batch;
+    private Texture background;
+    private Texture[] bird;
+    private Texture[] tubes;
+    private Texture gameOver;
+    private float birdX , birdY;
+    private float screenWidth , screenHeight;
+    private float velocity = 0;
 
-	int numberOfTubes = 4;
-	float tubePos[] , tubeGapY[];
-	float distanceBewteenTubes;
-	int gameState = 0;
-	int birdState = 0;
-	int score = 0;
-	int flapCount = 0;
-	float gap = 300f;
-	float tubeSpeed = 3;
-	boolean vis[];
+    private int numberOfTubes = 4;
+    private float[] tubePos , tubeGapY;
+    private float distanceBewteenTubes;
+    private int gameState = 0;
+    private int birdState = 0;
+    private int score = 0;
+    private int flapCount = 0;
+    private float gap = 300f;
+    private float tubeSpeed = 3;
+    private boolean[] vis;
 
-	BitmapFont font;
-	Circle birdCircle;
-	Rectangle topRect[] , bottomRect[];
+	private BitmapFont font;
+	private Circle birdCircle;
+	private Rectangle[] topRect , bottomRect;
+
+	private Sound flap;
+	private Sound hitSound;
 
 
 	@Override
@@ -70,7 +74,8 @@ public class FlappyBird extends ApplicationAdapter {
 		bird[1] = new Texture("bird2.png");
 		birdCircle = new Circle();
 
-
+		flap = Gdx.audio.newSound(Gdx.files.internal("wing.ogg"));
+		hitSound = Gdx.audio.newSound(Gdx.files.internal("hit.ogg"));
 		init();
 	}
 
@@ -97,6 +102,7 @@ public class FlappyBird extends ApplicationAdapter {
 			gameState = 1;
 			if(birdY < screenHeight - bird[0].getWidth())
 			velocity = -14;
+			flap.play(0.2f);
 		}
 
 		if(gameState == 1)
@@ -136,6 +142,7 @@ public class FlappyBird extends ApplicationAdapter {
 
 				if(Intersector.overlaps(birdCircle , bottomRect[i]) || Intersector.overlaps(birdCircle , topRect[i]))
 				{
+					hitSound.play(0.2f);
 					gameState = 2;
 				}
 			}
@@ -146,7 +153,7 @@ public class FlappyBird extends ApplicationAdapter {
                 batch.draw(gameOver , screenWidth/2 - gameOver.getWidth()/2 , screenHeight/2 - gameOver.getHeight()/2);
             }
 
-		font.draw(batch , "Score :" +String.valueOf(score) , 70 , screenHeight-50);
+		font.draw(batch , "Score :" + score , 70 , screenHeight-50);
 		batch.draw(bird[birdState] , birdX, birdY);
         batch.end();
 
@@ -159,7 +166,7 @@ public class FlappyBird extends ApplicationAdapter {
 		background.dispose();
 	}
 
-	void init()
+    private void init()
     {
         score = 0;
         velocity = 0;
